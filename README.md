@@ -216,4 +216,10 @@ Will be transformed into this HTML:
 
     Check out the <a target="_blank" class="tsdoc-link tsdoc-link--missing" title="Could not resolve link for 'abcdefg'">abcdefg</a> source code!
 
-## MIT License
+## Contributing
+
+See [Contributing](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md)
+
+## License
+
+MIT
