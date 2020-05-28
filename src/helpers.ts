@@ -1,12 +1,8 @@
 import { ReflectionKind, DeclarationReflection } from 'typedoc/dist/lib/models'
 import { SYMBOL_LINK_KINDS, SYMBOL_CONTAINERS } from './constants'
 
-type SymbolPathItem = readonly [string, ReflectionKind]
-type SymbolIndex = Map<string, SymbolPathItem[]>
-
-// function isReflection(r: Reflection | ReflectionGroup): r is Reflection {
-//   return !!('name' in r)
-// }
+export type SymbolPathItem = readonly [string, ReflectionKind]
+export type SymbolIndex = Map<string, SymbolPathItem[]>
 
 /**
  * Builds a lookup of symbol expressions to links for fast lookups

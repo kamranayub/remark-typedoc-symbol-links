@@ -1,10 +1,38 @@
+import { Root, Content } from 'ts-mdast'
 import typedoc from './typedoc.json'
-import { buildSymbolLinkIndex, generateLinkFromSymbol } from '../helpers'
-import remarkTransform from '../'
+import { buildSymbolLinkIndex, generateLinkFromSymbol, SymbolIndex, SymbolPathItem } from '../helpers'
+import remarkTransform from '..'
+import { ReflectionKind } from 'typedoc'
 
 describe('remark-typedoc-symbol-links', () => {
+  test('should pass through with no options', () => {
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'a text node',
+        },
+      ],
+    }
+
+    const transform = remarkTransform()
+
+    transform(mockMdast)
+
+    expect(mockMdast).toEqual({
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'a text node',
+        },
+      ],
+    })
+  })
+
   test('should replace simple symbol text node with text and link nodes to symbol', () => {
-    const mockMdast = {
+    const mockMdast: Root = {
       type: 'root',
       children: [
         {
@@ -14,6 +42,8 @@ describe('remark-typedoc-symbol-links', () => {
         {
           type: 'linkReference',
           label: 'Engine',
+          identifier: 'Engine',
+          referenceType: 'shortcut',
           children: [{ type: 'text', value: 'Engine' }],
         },
         {
@@ -22,7 +52,7 @@ describe('remark-typedoc-symbol-links', () => {
         },
       ],
     }
-    const transform = remarkTransform({ typedoc })
+    const transform = remarkTransform({ typedoc: typedoc as any })
 
     transform(mockMdast)
 
@@ -35,15 +65,15 @@ describe('remark-typedoc-symbol-links', () => {
 
     expect(link.type).toBe('link')
     expect(link.url).toBe('/classes/_engine_.engine.html')
-    expect(link.data.hProperties.className).toBe('symbol')
+    expect((link.data?.hProperties as any)?.className).toBe('symbol')
     expect(link.children).toHaveLength(1)
-    const [linkText] = link.children
+    const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')
     expect(linkText.value).toBe('Engine')
   })
 
   test('should replace aliased symbol text node', () => {
-    const mockMdast = {
+    const mockMdast: Root = {
       type: 'root',
       children: [
         {
@@ -53,6 +83,8 @@ describe('remark-typedoc-symbol-links', () => {
         {
           type: 'linkReference',
           label: 'Engine|the engine',
+          identifier: 'engine|the engine',
+          referenceType: 'shortcut',
           children: [{ type: 'text', value: 'Engine|the engine' }],
         },
         {
@@ -61,7 +93,7 @@ describe('remark-typedoc-symbol-links', () => {
         },
       ],
     }
-    const transform = remarkTransform({ typedoc })
+    const transform = remarkTransform({ typedoc: typedoc as any })
 
     transform(mockMdast)
 
@@ -75,13 +107,13 @@ describe('remark-typedoc-symbol-links', () => {
     expect(link.type).toBe('link')
     expect(link.url).toBe('/classes/_engine_.engine.html')
     expect(link.children).toHaveLength(1)
-    const [linkText] = link.children
+    const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')
     expect(linkText.value).toBe('the engine')
   })
 
   test('should annotate broken symbol with missing data attribute', () => {
-    const mockMdast = {
+    const mockMdast: Root = {
       type: 'root',
       children: [
         {
@@ -91,6 +123,8 @@ describe('remark-typedoc-symbol-links', () => {
         {
           type: 'linkReference',
           label: 'abcdefg',
+          identifier: 'abcdefg',
+          referenceType: 'shortcut',
           children: [{ type: 'text', value: 'abcdefg' }],
         },
         {
@@ -99,7 +133,7 @@ describe('remark-typedoc-symbol-links', () => {
         },
       ],
     }
-    const transform = remarkTransform({ typedoc })
+    const transform = remarkTransform({ typedoc: typedoc as any })
 
     transform(mockMdast)
 
@@ -111,16 +145,48 @@ describe('remark-typedoc-symbol-links', () => {
     expect(rhs.value).toBe(' docs')
 
     expect(link.type).toBe('link')
-    expect(link.url).toBeUndefined()
-    expect(link.data.hProperties['data-missing']).toBe(true)
+    expect(link.url).toBe('')
+    expect((link.data?.hProperties as any)?.['data-missing']).toBe(true)
     expect(link.children).toHaveLength(1)
-    const [linkText] = link.children
+    const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')
     expect(linkText.value).toBe('abcdefg')
   })
 
+  test('should warn on broken symbol in development env', () => {
+    process.env.NODE_ENV = 'development'
+
+    jest.spyOn(console, 'warn')
+
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'A link to [',
+        },
+        {
+          type: 'linkReference',
+          label: 'abcdefg',
+          identifier: 'abcdefg',
+          referenceType: 'shortcut',
+          children: [{ type: 'text', value: 'abcdefg' }],
+        },
+        {
+          type: 'text',
+          value: '] docs',
+        },
+      ],
+    }
+    const transform = remarkTransform({ typedoc: typedoc as any })
+
+    transform(mockMdast)
+
+    expect(console.warn).toHaveBeenCalledWith('remark-typedoc-symbol-links: Could not resolve symbol:', 'abcdefg')
+  })
+
   test('should transform children', () => {
-    const mockMdast = {
+    const mockMdast: Root = {
       type: 'root',
       children: [
         {
@@ -133,6 +199,8 @@ describe('remark-typedoc-symbol-links', () => {
             {
               type: 'linkReference',
               label: 'Engine|the engine',
+              identifier: 'engine|the engine',
+              referenceType: 'shortcut',
               children: [{ type: 'text', value: 'Engine|the engine' }],
             },
             {
@@ -143,20 +211,79 @@ describe('remark-typedoc-symbol-links', () => {
         },
       ],
     }
-    const transform = remarkTransform({ typedoc })
+    const transform = remarkTransform({ typedoc: typedoc as any })
 
     transform(mockMdast)
 
     expect(mockMdast.children).toHaveLength(1)
     expect(mockMdast.children[0].children).toHaveLength(3)
-    expect(mockMdast.children[0].children[1].type).toBe('link')
+    expect((mockMdast.children[0].children as Content[])[1].type).toBe('link')
+  })
+
+  test('should skip invalid link references', () => {
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'A link to [',
+        },
+        {
+          type: 'linkReference',
+          identifier: 'missing label',
+          referenceType: 'shortcut',
+          children: [{ type: 'text', value: 'invalid' }],
+        },
+        {
+          type: 'text',
+          value: '] docs',
+        },
+      ],
+    }
+    const transform = remarkTransform({ typedoc: typedoc as any })
+
+    transform(mockMdast)
+
+    const [, link] = mockMdast.children
+
+    expect(link.type).toBe('linkReference')
+  })
+
+  test('should skip unbalanced brackets', () => {
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'A link to',
+        },
+        {
+          type: 'linkReference',
+          label: 'missing lhs',
+          identifier: 'missing lhs',
+          referenceType: 'shortcut',
+          children: [{ type: 'text', value: 'invalid' }],
+        },
+        {
+          type: 'text',
+          value: '] docs',
+        },
+      ],
+    }
+    const transform = remarkTransform({ typedoc: typedoc as any })
+
+    transform(mockMdast)
+
+    const [, link] = mockMdast.children
+
+    expect(link.type).toBe('linkReference')
   })
 
   describe('generateLinkFromSymbol', () => {
-    let lookup
+    let lookup: SymbolIndex
 
     beforeAll(() => {
-      lookup = buildSymbolLinkIndex(typedoc)
+      lookup = buildSymbolLinkIndex(typedoc as any)
     })
 
     test('should generate link for class symbol', () => {
@@ -220,11 +347,37 @@ describe('remark-typedoc-symbol-links', () => {
         '/modules/_util_detector_.html#reported_features',
       )
     })
+
+    test('should generate link for some module symbol', () => {
+      const someModuleIndex: SymbolIndex = new Map<string, SymbolPathItem[]>([
+        [
+          'test',
+          [
+            ['someModule', ReflectionKind.SomeModule],
+            ['test', ReflectionKind.Function],
+          ],
+        ],
+      ])
+      expect(generateLinkFromSymbol('test', '/', someModuleIndex)).toBe('/modules/somemodule.html#test')
+    })
+
+    test('should pass through if invalid container kind', () => {
+      const invalidContainerIndex: SymbolIndex = new Map<string, SymbolPathItem[]>([
+        ['test', [['test', ReflectionKind.Function]]],
+      ])
+      expect(generateLinkFromSymbol('test', '/', invalidContainerIndex)).toBe('/#test')
+    })
   })
 
   describe('buildSymbolLinkIndex', () => {
+    test('should skip if no node is passed', () => {
+      const lookup = buildSymbolLinkIndex(undefined)
+
+      expect(lookup.size).toBe(0)
+    })
+
     test('should build index of fully-qualified symbol path expressions', () => {
-      const lookup = buildSymbolLinkIndex(typedoc)
+      const lookup = buildSymbolLinkIndex(typedoc as any)
 
       // Classes, ctors, methods, accessors
       expect(lookup.has('Engine#ctor')).toBe(true)

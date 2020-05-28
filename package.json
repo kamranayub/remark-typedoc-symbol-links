@@ -1,7 +1,7 @@
 {
-  "name": "template-typescript-package",
+  "name": "remark-typedoc-symbol-links",
   "version": "0.0.0-development",
-  "description": "A boilerplate repo for publishing typescript packages to npm",
+  "description": "A Remark plugin to transform TypeDoc symbol links into link tags",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -15,27 +15,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/beeman/template-typescript-package.git"
+    "url": "https://github.com/kamranayub/remark-typedoc-symbol-links.git"
   },
   "keywords": [
-    "TypeScript",
-    "Package",
-    "Starter"
+    "typescript",
+    "remark-plugin",
+    "remark"
   ],
   "author": {
-    "name": "Bram Borggreve",
-    "email": "borggreve@gmail.com"
+    "name": "Kamran Ayub",
+    "email": "kamran.ayub@gmail.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/beeman/template-typescript-package/issues"
+    "url": "https://github.com/kamranayub/remark-typedoc-symbol-links/issues"
   },
-  "homepage": "https://github.com/beeman/template-typescript-package#readme",
+  "homepage": "https://github.com/kamranayub/remark-typedoc-symbol-links#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint && npm test",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "yarn lint && npm test"
+      "pre-commit": "yarn lint --fix && npm test",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "devDependencies": {
@@ -60,6 +59,7 @@
     "dist/**/*"
   ],
   "dependencies": {
+    "ts-mdast": "^1.0.0",
     "typedoc": "^0.17.7",
     "unist-util-modify-children": "^2.0.0"
   }
