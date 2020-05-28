@@ -1,8 +1,9 @@
 import { Root, Content } from 'ts-mdast'
+import { ReflectionKind } from 'typedoc'
 import typedoc from './typedoc.json'
 import { buildSymbolLinkIndex, generateLinkFromSymbol, SymbolIndex, SymbolPathItem } from '../helpers'
-import remarkTransform from '..'
-import { ReflectionKind } from 'typedoc'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const remarkTransform = require('..')
 
 describe('remark-typedoc-symbol-links', () => {
   test('should pass through with no options', () => {
@@ -65,7 +66,7 @@ describe('remark-typedoc-symbol-links', () => {
 
     expect(link.type).toBe('link')
     expect(link.url).toBe('/classes/_engine_.engine.html')
-    expect((link.data?.hProperties as any)?.className).toBe('symbol')
+    expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
     expect(link.children).toHaveLength(1)
     const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')
@@ -106,13 +107,14 @@ describe('remark-typedoc-symbol-links', () => {
 
     expect(link.type).toBe('link')
     expect(link.url).toBe('/classes/_engine_.engine.html')
+    expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
     expect(link.children).toHaveLength(1)
     const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')
     expect(linkText.value).toBe('the engine')
   })
 
-  test('should annotate broken symbol with missing data attribute', () => {
+  test('should annotate broken symbol with missing className', () => {
     const mockMdast: Root = {
       type: 'root',
       children: [
@@ -146,7 +148,7 @@ describe('remark-typedoc-symbol-links', () => {
 
     expect(link.type).toBe('link')
     expect(link.url).toBe('')
-    expect((link.data?.hProperties as any)?.['data-missing']).toBe(true)
+    expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--missing')
     expect(link.children).toHaveLength(1)
     const [linkText] = link.children as Content[]
     expect(linkText.type).toBe('text')

@@ -4,18 +4,29 @@ import { Root, Node, isText, isParent, isLinkReference } from 'ts-mdast'
 import { buildSymbolLinkIndex, generateLinkFromSymbol } from './helpers'
 
 interface Options {
-  id?: string
   typedoc?: DeclarationReflection
   basePath?: string
+  linkClassName?: string
+  linkMissingClassName?: string
+  linkAliasedClassName?: string
+  linkTitleMessage?: (symbolPath: string, missing: boolean) => string
 }
 
 type MdastTransformer = (tree: Root) => void
 
-export default function remarkTypedocSymbolLinks(options: Options = {}): MdastTransformer {
-  const typedoc = options.typedoc
-  const basePath = options.basePath || '/'
+const DEFAULT_OPTIONS = {
+  basePath: '/',
+  linkClassName: 'tsdoc-link',
+  linkAliasedClassName: 'tsdoc-link--aliased',
+  linkMissingClassName: 'tsdoc-link--missing',
+  linkTitleMessage(symbolPath: string, missing: boolean) {
+    return missing ? `Could not resolve link to '${symbolPath}'` : `View '${symbolPath}'`
+  },
+}
 
-  const symbolLinkIndex = buildSymbolLinkIndex(typedoc)
+module.exports = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTransformer {
+  const options = { ...DEFAULT_OPTIONS, ...userOptions }
+  const symbolLinkIndex = buildSymbolLinkIndex(options.typedoc)
 
   const linkModifier: modifyChildren.Modifier = (node, index, parent): number | void => {
     if (isParent(node) && node.children.length) {
@@ -34,33 +45,40 @@ export default function remarkTypedocSymbolLinks(options: Options = {}): MdastTr
     // have a left and right text node with `[` and `]` as the last
     // and first character value, respectively.
     if (isText(prevNode) && prevNode.value.endsWith('[') && isText(nextNode) && nextNode.value.startsWith(']')) {
-      const symbol = node.label
+      const linkText = node.label
 
-      if (!symbol) {
+      if (!linkText) {
         return
       }
 
       // does it have an alias display value? e.g. [[Symbol.method|display text]]
-      const [symbolPath, ...alias] = symbol.split('|')
-      const displayValue = alias.length ? alias.join('') : symbol
-      const symbolLink = generateLinkFromSymbol(symbolPath, basePath, symbolLinkIndex)
+      const [symbol, ...alias] = linkText.split('|')
+      const displayValue = alias.length ? alias.join('') : linkText
+      const symbolLink = generateLinkFromSymbol(symbol, options.basePath, symbolLinkIndex)
+      const missing = !symbolLink
 
-      if (process.env.NODE_ENV === 'development' && !symbolLink) {
-        console.warn('remark-typedoc-symbol-links: Could not resolve symbol:', symbol)
+      if (process.env.NODE_ENV === 'development' && missing) {
+        console.warn('remark-typedoc-symbol-links: Could not resolve symbol:', linkText)
+      }
+
+      const classNames = [options.linkClassName]
+
+      if (missing) {
+        classNames.push(options.linkMissingClassName)
+      }
+
+      if (displayValue !== linkText) {
+        classNames.push(options.linkAliasedClassName)
       }
 
       // replace linkReference with link node
       const linkNode = {
         type: 'link',
         url: symbolLink || '',
-        title: symbolLink
-          ? `View '${symbolPath}' in API reference docs`
-          : "Missing link to symbol in API docs, we're happy to accept a PR to fix this!",
-
+        title: options.linkTitleMessage(symbol, missing),
         data: {
           hProperties: {
-            className: 'symbol',
-            'data-missing': symbolLink ? undefined : true,
+            className: classNames.join(' '),
             target: '_blank',
           },
         },

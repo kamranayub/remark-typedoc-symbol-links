@@ -15,13 +15,29 @@ A Remark plugin for transforming [TypeDoc](https://typedoc.org) symbol links, su
 
 ## Usage
 
+Install via `npm` or `yarn`:
+
+```sh
+# npm
+npm install remark-typedoc-symbol-links
+
+# yarn
+yarn add remark-typedoc-symbol-links
+```
+
+Then within Node.js:
+
+```js
+const typedocSymbolLinks = require('remark-typedoc-symbol-links')
+```
+
 ### With Gatsby.js
 
-This was developed for use by the [excalibur.js](https://excaliburjs.com) project and is in use in the documentation site, see [the Gatsby config](https://github.com/excaliburjs/excaliburjs.github.io/blob/site/gatsby-config.js). This is the underlying package used in [gatsby-remark-typedoc-symbol-links](...) which depends on the [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc) package to generate the required AST in TypeDoc for a TypeScript project.
+This was developed for use by the [excalibur.js](https://excaliburjs.com) project and is used in the documentation site, see [the Gatsby config](https://github.com/excaliburjs/excaliburjs.github.io/blob/site/gatsby-config.js). This is the underlying package used in [gatsby-remark-typedoc-symbol-links](...) which depends on the [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc) package to generate the required TypeDoc project structure for a TypeScript project and makes it available via GraphQL nodes.
 
-### With unified
+### With Remark and unified
 
-If using as a Remark plugin, see `examples/example.js`. 
+This plugin is meant to be used with [mdast](https://github.com/syntax-tree/mdast) inside a [unified](https://unifiedjs.com/) pipeline. If using directly as a Remark plugin, see `examples/example.js`.
 
 Given the folowing Markdown:
 
@@ -31,7 +47,7 @@ Given the folowing Markdown:
 Create a new [[Engine]] instance and call [[Engine.start|start]] to start the game!
 ```
 
-And the following usage with `unified`:
+And the following usage with `unified` and `remark-parse`:
 
 ```js
 const fs = require('fs')
@@ -58,7 +74,25 @@ Node will output:
 
 ```html
 <h2>Introduction</h2>
-<p>Create a new <a href="/docs/apiclasses/_engine_.engine.html" title="View &#x27;Engine&#x27; in API reference docs" class="symbol" target="_blank">Engine</a> instance and call <a href="/docs/apiclasses/_engine_.engine.html#start" title="View &#x27;Engine.start&#x27; in API reference docs" class="symbol" target="_blank">start</a> to start the game!</p>
+<p>
+  Create a new
+  <a
+    href="/docs/apiclasses/_engine_.engine.html"
+    title="View &#x27;Engine&#x27; in API reference docs"
+    class="symbol"
+    target="_blank"
+    >Engine</a
+  >
+  instance and call
+  <a
+    href="/docs/apiclasses/_engine_.engine.html#start"
+    title="View &#x27;Engine.start&#x27; in API reference docs"
+    class="symbol"
+    target="_blank"
+    >start</a
+  >
+  to start the game!
+</p>
 ```
 
 ### Handling missing links
@@ -73,13 +107,36 @@ Transform TypeDoc markdown symbol links to links, with rehype compatibility.
 
 #### `options`
 
-##### `options.typedoc` (required)
+##### `options.typedoc: object` (required)
 
-The parsed JSON of TypeDoc output (such as running through `typedoc --generateJson`). When used with [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc), this is provided automatically.
+An object representing TypeDoc output for a TypeScript project (such as running through `typedoc --generateJson` or done programmatically). This is the tree used to index symbols and perform link resolution. When used with [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc), this is provided automatically. See `examples/example.js` for an example loading JSON using `fs.readSync`.
 
-##### `options.basePath` (optional, default: `/`)
+##### `options.basePath: string` (optional, default: `/`)
 
 The path prefix to prepend to all generated links. Typically the path to where your generated TypeDoc documentation lives.
+
+##### `options.linkClassName: string` (optional, default: `tsdoc-link`)
+
+The default class name to apply to the generated link. Will always be present on the link.
+
+##### `options.linkMissingClassName: string` (optional, default: `tsdoc-link--missing`)
+
+This will be appended to the link class names if the symbol could not be resolved.
+
+##### `options.linkAliasedClassName: string` (optional, default: `tsdoc-link--aliased`)
+
+This will be appened to the link class names if the symbol had an alias (e.g. `[[Class.method|a cool method]]`)
+
+#### `options.linkTitleMessage: (symbolPath: string, missing: boolean) => string` (optional)
+
+A function to invoke that will be passed the qualified symbol path (e.g. `Class.method`) and whether or not the symbol was missing. If `missing` is `true`, the link could not be resolved.
+
+The default implementation shows the following messages:
+
+```
+missing => `Could not resolve link to '${symbolPath}'`
+not missing => `View '${symbolPath}'`
+```
 
 ## Compatibility and differences from TypeDoc
 
