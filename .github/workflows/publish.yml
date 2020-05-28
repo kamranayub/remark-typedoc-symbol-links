@@ -20,7 +20,7 @@ jobs:
       - run: yarn test
 
   build-and-publish-npm:
-    needs: build-and-publish-gpr
+    needs: lint-and-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
