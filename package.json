@@ -11,7 +11,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "start": "npm link && nodemon",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

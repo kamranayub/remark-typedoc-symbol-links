@@ -44,7 +44,14 @@ module.exports = function remarkTypedocSymbolLinks(userOptions: Options = {}): M
     // A symbol link is interpreted as a linkReference and will
     // have a left and right text node with `[` and `]` as the last
     // and first character value, respectively.
-    if (isText(prevNode) && prevNode.value.endsWith('[') && isText(nextNode) && nextNode.value.startsWith(']')) {
+    if (
+      prevNode &&
+      isText(prevNode) &&
+      prevNode.value.endsWith('[') &&
+      nextNode &&
+      isText(nextNode) &&
+      nextNode.value.startsWith(']')
+    ) {
       const linkText = node.label
 
       if (!linkText) {

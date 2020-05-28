@@ -281,6 +281,58 @@ describe('remark-typedoc-symbol-links', () => {
     expect(link.type).toBe('linkReference')
   })
 
+  test('should skip when lhs is missing', () => {
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'text',
+          value: 'A link to [',
+        },
+        {
+          type: 'linkReference',
+          label: 'missing lhs',
+          identifier: 'missing lhs',
+          referenceType: 'shortcut',
+          children: [{ type: 'text', value: 'invalid' }],
+        },
+      ],
+    }
+    const transform = remarkTransform({ typedoc: typedoc as any })
+
+    transform(mockMdast)
+
+    const [, link] = mockMdast.children
+
+    expect(link.type).toBe('linkReference')
+  })
+
+  test('should skip when rhs is missing', () => {
+    const mockMdast: Root = {
+      type: 'root',
+      children: [
+        {
+          type: 'linkReference',
+          label: 'missing lhs',
+          identifier: 'missing lhs',
+          referenceType: 'shortcut',
+          children: [{ type: 'text', value: 'invalid' }],
+        },
+        {
+          type: 'text',
+          value: '] docs',
+        },
+      ],
+    }
+    const transform = remarkTransform({ typedoc: typedoc as any })
+
+    transform(mockMdast)
+
+    const [link] = mockMdast.children
+
+    expect(link.type).toBe('linkReference')
+  })
+
   describe('generateLinkFromSymbol', () => {
     let lookup: SymbolIndex
 
