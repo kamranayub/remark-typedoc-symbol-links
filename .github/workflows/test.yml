@@ -27,4 +27,4 @@ jobs:
       # Unit test
       - run: yarn test
       # Integration test
-      - run: cd examples && node example.js
+      - run: cd example && npm i && node example.js
