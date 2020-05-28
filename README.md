@@ -76,18 +76,14 @@ Node will output:
 <h2>Introduction</h2>
 <p>
   Create a new
-  <a
-    href="/docs/apiclasses/_engine_.engine.html"
-    title="View &#x27;Engine&#x27; in API reference docs"
-    class="symbol"
-    target="_blank"
+  <a href="/docs/apiclasses/_engine_.engine.html" title="View &#x27;Engine&#x27;" class="tsdoc-link" target="_blank"
     >Engine</a
   >
   instance and call
   <a
     href="/docs/apiclasses/_engine_.engine.html#start"
-    title="View &#x27;Engine.start&#x27; in API reference docs"
-    class="symbol"
+    title="View &#x27;Engine.start&#x27;"
+    class="tsdoc-link tsdoc-link--aliased"
     target="_blank"
     >start</a
   >
@@ -97,7 +93,7 @@ Node will output:
 
 ### Handling missing links
 
-When no matching symbol is detected, the anchor link is rendered with a `data-missing` attribute and the title changes to indicate the symbol is missing. This will allow you to add custom CSS styles like a red underline.
+When no matching symbol is detected, the anchor link is rendered with a missing class name (default: `tsdoc-link--missing`) and the title changes to indicate the symbol is missing. A warning is also output to the console in development mode (`NODE_ENV === 'development'`). This should provide enough feedback to make it easier to ensure your documentation doesn't drift out of date.
 
 ## API
 
@@ -198,7 +194,7 @@ The following Markdown:
 
 Will be transformed into this HTML:
 
-    Check out the <a href="/classes/_module_.sword.html#slash" target="_blank" class="symbol">Sword.slash</a> source code!
+    Check out the <a href="/classes/_module_.sword.html#slash" target="_blank" class="tsdoc-link" title="View 'Sword.slash'">Sword.slash</a> source code!
 
 ### Aliased symbol links
 
@@ -208,6 +204,16 @@ The following Markdown:
 
 Will be transformed into this HTML:
 
-    Check out the <a href="/classes/_module_.sword.html#slash" target="_blank" class="symbol symbol--aliased">slash helper</a> source code!
+    Check out the <a href="/classes/_module_.sword.html#slash" target="_blank" class="tsdoc-link tsdoc-link--aliased" title="View 'Sword.slash'">slash helper</a> source code!
+
+### Missing symbol links
+
+The following Markdown:
+
+    Check out the [[abcdefg]] source code!
+
+Will be transformed into this HTML:
+
+    Check out the <a target="_blank" class="tsdoc-link tsdoc-link--missing" title="Could not resolve link for 'abcdefg'">abcdefg</a> source code!
 
 ## MIT License
