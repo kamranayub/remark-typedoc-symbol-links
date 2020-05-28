@@ -57,8 +57,8 @@ export function generateLinkFromSymbol(
   symbolLinkIndex: SymbolIndex,
 ): string | undefined {
   let symbolLink = undefined
-
   const symbolMatches: SymbolPathItem[] = symbolLinkIndex.get(symbolPath) ?? []
+  basePath = ensureTrailingSlash(basePath)
 
   if (symbolMatches && symbolMatches.length) {
     const [, containerKind] = symbolMatches
@@ -114,4 +114,11 @@ export function generateLinkFromSymbol(
   }
 
   return symbolLink
+}
+
+function ensureTrailingSlash(path: string) {
+  if (!path.endsWith('/')) {
+    return path + '/'
+  }
+  return path
 }

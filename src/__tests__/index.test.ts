@@ -53,7 +53,7 @@ describe('remark-typedoc-symbol-links', () => {
         },
       ],
     }
-    const transform = remarkTransform({ typedoc: typedoc as any })
+    const transform = remarkTransform({ typedoc: typedoc as any, basePath: '' })
 
     transform(mockMdast)
 
