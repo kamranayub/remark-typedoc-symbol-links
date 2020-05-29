@@ -13,7 +13,7 @@
 
 A Remark plugin for transforming [TypeDoc](https://typedoc.org) symbol links, such as `[[symbol]]` to a Markdown link, with Rehype compatibility.
 
-## Usage
+## Install
 
 Install via `npm` or `yarn`:
 
@@ -25,6 +25,8 @@ npm install remark-typedoc-symbol-links
 yarn add remark-typedoc-symbol-links
 ```
 
+## Usage
+
 Then within Node.js:
 
 ```js
@@ -33,7 +35,7 @@ const typedocSymbolLinks = require('remark-typedoc-symbol-links')
 
 ### With Gatsby.js
 
-This was developed for use by the [excalibur.js](https://excaliburjs.com) project and is used in the documentation site, see [the Gatsby config](https://github.com/excaliburjs/excaliburjs.github.io/blob/site/gatsby-config.js). This is the underlying package used in [gatsby-remark-typedoc-symbol-links](...) which depends on the [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc) package to generate the required TypeDoc project structure for a TypeScript project and makes it available via GraphQL nodes.
+This was developed for use by the [excalibur.js](https://excaliburjs.com) project and is used in the documentation site, see [the Gatsby config](https://github.com/excaliburjs/excaliburjs.github.io/blob/site/gatsby-config.js). This is the underlying package used in [gatsby-remark-typedoc-symbol-links](https://github.com/kamranayub/gatsby-remark-typedoc-symbol-links) which depends on the [gatsby-source-typedoc](https://github.com/kamranayub/gatsby-source-typedoc) package to generate the required TypeDoc project structure for a TypeScript project and makes it available via GraphQL nodes.
 
 ### With Remark and unified
 
