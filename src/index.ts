@@ -24,7 +24,7 @@ const DEFAULT_OPTIONS = {
   },
 }
 
-module.exports = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTransformer {
+export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTransformer {
   const options = { ...DEFAULT_OPTIONS, ...userOptions }
   const symbolLinkIndex = buildSymbolLinkIndex(options.typedoc)
 
