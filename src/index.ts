@@ -1,16 +1,7 @@
 import modifyChildren from 'unist-util-modify-children'
-import { DeclarationReflection } from 'typedoc/dist/lib/models'
 import { Root, Node, isText, isParent, isLinkReference } from 'ts-mdast'
 import { buildSymbolLinkIndex, generateLinkFromSymbol } from './helpers'
-
-interface Options {
-  typedoc?: DeclarationReflection
-  basePath?: string
-  linkClassName?: string
-  linkMissingClassName?: string
-  linkAliasedClassName?: string
-  linkTitleMessage?: (symbolPath: string, missing: boolean) => string
-}
+import { Options } from './types'
 
 type MdastTransformer = (tree: Root) => void
 
