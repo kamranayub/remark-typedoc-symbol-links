@@ -1,4 +1,4 @@
-import { ReflectionKind } from 'typedoc/dist/lib/models/reflections/abstract'
+import { ReflectionKind } from 'typedoc'
 
 export const SYMBOL_CONTAINERS = [
   ReflectionKind.Class,
