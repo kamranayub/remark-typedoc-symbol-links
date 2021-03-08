@@ -70,7 +70,11 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      expect(link.url).toBe('/classes/_engine_.engine.html')
+      if (version === '0.17') {
+        expect(link.url).toBe('/classes/_engine_.engine.html')
+      } else {
+        expect(link.url).toBe('/classes/engine.engine.html')
+      }
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
       expect(link.children).toHaveLength(1)
       const [linkText] = link.children as Content[]
@@ -111,7 +115,11 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      expect(link.url).toBe('/classes/_engine_.engine.html')
+      if (version === '0.17') {
+        expect(link.url).toBe('/classes/_engine_.engine.html')
+      } else {
+        expect(link.url).toBe('/classes/engine.engine.html')
+      }
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
       expect(link.children).toHaveLength(1)
       const [linkText] = link.children as Content[]
@@ -346,65 +354,129 @@ const remarkTransform = require('..')
       })
 
       test('should generate link for class symbol', () => {
-        expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/_engine_.engine.html')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/_engine_.engine.html')
+        } else {
+          expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/engine.engine.html')
+        }
       })
 
       test('should generate link for class constructor symbol', () => {
-        expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/_engine_.engine.html#constructor')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/_engine_.engine.html#constructor')
+        } else {
+          expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/engine.engine.html#constructor')
+        }
       })
 
       test('should generate link for class method symbol', () => {
-        expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/_engine_.engine.html#start')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/_engine_.engine.html#start')
+        } else {
+          expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/engine.engine.html#start')
+        }
       })
 
       test('should generate link for class static method symbol', () => {
-        expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe(
-          '/classes/_engine_.engine.html#createmainloop',
-        )
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe(
+            '/classes/_engine_.engine.html#createmainloop',
+          )
+        } else {
+          expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe(
+            '/classes/engine.engine.html#createmainloop',
+          )
+        }
       })
 
       test('should generate link for class property symbol', () => {
-        expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe('/classes/_engine_.engine.html#rootscene')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe(
+            '/classes/_engine_.engine.html#rootscene',
+          )
+        } else {
+          expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe('/classes/engine.engine.html#rootscene')
+        }
       })
 
       test('should generate link for class accessor symbol', () => {
-        expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe(
-          '/classes/_engine_.engine.html#canvasheight',
-        )
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe(
+            '/classes/_engine_.engine.html#canvasheight',
+          )
+        } else {
+          expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe(
+            '/classes/engine.engine.html#canvasheight',
+          )
+        }
       })
 
       test('should generate link for interface symbol', () => {
-        expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/_engine_.engineoptions.html')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/_engine_.engineoptions.html')
+        } else {
+          expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/engine.engineoptions.html')
+        }
       })
 
       test('should generate link for interface property symbol', () => {
-        expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
-          '/interfaces/_engine_.engineoptions.html#backgroundcolor',
-        )
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
+            '/interfaces/_engine_.engineoptions.html#backgroundcolor',
+          )
+        } else {
+          expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
+            '/interfaces/engine.engineoptions.html#backgroundcolor',
+          )
+        }
       })
 
       test('should generate link for module function symbol', () => {
-        expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/_util_util_.html#clamp')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/_util_util_.html#clamp')
+        } else {
+          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/util_util.html#clamp')
+        }
       })
 
       test('should generate link for module enum symbol', () => {
-        expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/_engine_.displaymode.html')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/_engine_.displaymode.html')
+        } else {
+          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/engine.displaymode.html')
+        }
       })
 
       test('should generate link for module enum member symbol', () => {
-        expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
-          '/enums/_engine_.displaymode.html#container',
-        )
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
+            '/enums/_engine_.displaymode.html#container',
+          )
+        } else {
+          expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
+            '/enums/engine.displaymode.html#container',
+          )
+        }
       })
 
       test('should generate link for type alias symbol', () => {
-        expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules/_events_.html#activate')
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules/_events_.html#activate')
+        } else {
+          expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules/events.html#activate')
+        }
       })
 
       test('should generate link for object literals symbol', () => {
-        expect(generateLinkFromSymbol('REPORTED_FEATURES', '/', lookup)).toBe(
-          '/modules/_util_detector_.html#reported_features',
-        )
+        if (version === '0.17') {
+          expect(generateLinkFromSymbol('REPORTED_FEATURES', '/', lookup)).toBe(
+            '/modules/_util_detector_.html#reported_features',
+          )
+        } else {
+          expect(generateLinkFromSymbol('REPORTED_FEATURES', '/', lookup)).toBe(
+            '/modules/util_detector.html#reported_features',
+          )
+        }
       })
 
       test('should generate link for some module symbol', () => {
