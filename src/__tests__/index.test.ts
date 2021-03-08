@@ -435,7 +435,7 @@ const remarkTransform = require('..')
         if (version === '0.17') {
           expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/_util_util_.html#clamp')
         } else {
-          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/util_util.html#clamp')
+          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/util_index.html#clamp')
         }
       })
 
@@ -443,7 +443,7 @@ const remarkTransform = require('..')
         if (version === '0.17') {
           expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/_engine_.displaymode.html')
         } else {
-          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/engine.displaymode.html')
+          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/screen.displaymode.html')
         }
       })
 
@@ -454,7 +454,7 @@ const remarkTransform = require('..')
           )
         } else {
           expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
-            '/enums/engine.displaymode.html#container',
+            '/enums/screen.displaymode.html#container',
           )
         }
       })
