@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint-and-test:
-    name: Test on node 12 and ubuntu-latest
+    name: Test on node 14 and ubuntu-latest
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
       - run: yarn
       - run: yarn lint
       - run: yarn build
