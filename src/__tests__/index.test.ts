@@ -117,6 +117,43 @@ const remarkTransform = require('..')
       expect(linkText.value).toBe('Engine')
     })
 
+    test('remark 13 - should replace multiple symbol links with text and link nodes to symbol', () => {
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'text',
+            value: 'A link to [[Engine]] docs and [[Engine.start]] docs',
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any, basePath: '' })
+
+      transform(mockMdast)
+
+      expect(mockMdast.children).toHaveLength(5)
+
+      const [lhs, link, rhs, link2, rhsLast] = mockMdast.children
+
+      expect(lhs.value).toBe('A link to ')
+      expect(rhs.value).toBe(' docs and ')
+      expect(rhsLast.value).toBe(' docs')
+
+      expect(link.type).toBe('link')
+      expect(link2.type).toBe('link')
+
+      if (version === '0.17') {
+        expect(link.url).toBe('/classes/_engine_.engine.html')
+        expect(link2.url).toBe('/classes/_engine_.engine.html#start')
+      } else {
+        expect(link.url).toBe('/classes/engine.engine.html')
+        expect(link2.url).toBe('/classes/engine.engine.html#start')
+      }
+
+      expect((link.children as Content[])[0].value).toBe('Engine')
+      expect((link2.children as Content[])[0].value).toBe('Engine.start')
+    })
+
     test('should replace aliased symbol text node', () => {
       const mockMdast: Root = {
         type: 'root',
