@@ -1,4 +1,5 @@
-import { ReflectionKind, DeclarationReflection } from 'typedoc/dist/lib/models'
+import { ReflectionKind } from 'typedoc/dist/lib/models'
+import { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema'
 import { SYMBOL_LINK_KINDS, SYMBOL_CONTAINERS } from './constants'
 
 export type SymbolPathItem = readonly [string, ReflectionKind]
@@ -16,15 +17,15 @@ export function buildSymbolLinkIndex(
   if (!node) {
     return lookup
   }
+
   if (node.children && node.children.length) {
-    node.children.forEach((n) => {
-      if (!SYMBOL_LINK_KINDS.includes(n.kind) && !SYMBOL_CONTAINERS.includes(n.kind)) {
+    node.children.forEach((symbol) => {
+      if (!SYMBOL_LINK_KINDS.includes(symbol.kind) && !SYMBOL_CONTAINERS.includes(symbol.kind)) {
         return
       }
-      buildSymbolLinkIndex(n, [...parents, node], lookup)
+      buildSymbolLinkIndex(symbol, [...parents, node], lookup)
     })
   }
-
   const symbolExpression = [...parents, node].reduce((expr, n) => {
     if (!SYMBOL_LINK_KINDS.includes(n.kind)) {
       return expr
@@ -61,10 +62,12 @@ export function generateLinkFromSymbol(
   basePath = ensureTrailingSlash(basePath)
 
   if (symbolMatches && symbolMatches.length) {
-    const [, containerKind] = symbolMatches
+    const lastContainer = symbolMatches
       .concat([])
       .reverse()
       .find(([, kind]) => SYMBOL_CONTAINERS.includes(kind)) || [undefined, undefined]
+    const [, containerKind] = lastContainer
+    const lastContainerIndex = containerKind ? symbolMatches.indexOf(lastContainer) : undefined
 
     let containerPath
 
@@ -77,6 +80,7 @@ export function generateLinkFromSymbol(
         break
       case ReflectionKind.SomeModule:
       case ReflectionKind.Module:
+      case ReflectionKind.Namespace:
         containerPath = 'modules/'
         break
       case ReflectionKind.Enum:
@@ -86,13 +90,21 @@ export function generateLinkFromSymbol(
         containerPath = ''
     }
 
+    const isTopLevelExport =
+      containerPath === '' && symbolMatches.length === 2 && containerKind === ReflectionKind.Project
+
+    if (isTopLevelExport) {
+      containerPath = 'modules.html'
+    }
+
     // assemble file url
-    symbolLink = symbolMatches.reduce((path, [matchSymbolName, matchSymbolKind]) => {
+    symbolLink = symbolMatches.reduce((path, [matchSymbolName, matchSymbolKind], matchSymbolIndex) => {
       switch (matchSymbolKind) {
-        case 0:
+        case ReflectionKind.Project:
           break
         case ReflectionKind.SomeModule:
         case ReflectionKind.Module:
+        case ReflectionKind.Namespace:
           path += matchSymbolName.replace(/[^a-z0-9]/gi, '_') + '.'
           break
         case ReflectionKind.Class:
@@ -105,11 +117,11 @@ export function generateLinkFromSymbol(
           break
       }
 
-      if (matchSymbolKind === containerKind) {
+      if (containerKind !== ReflectionKind.Project && matchSymbolIndex === lastContainerIndex) {
         path += (path.endsWith('.') ? '' : '.') + 'html'
       }
 
-      return path.toLowerCase()
+      return path
     }, basePath + containerPath)
   }
 

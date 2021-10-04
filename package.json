@@ -54,8 +54,8 @@
     "prettier": "2.2.1",
     "semantic-release": "17.2.3",
     "ts-jest": "26.5.3",
-    "typedoc": "^0.20.30",
-    "typescript": "4.2.3"
+    "typedoc": "0.21.9",
+    "typescript": "4.4.3"
   },
   "files": [
     "dist/**/*"
@@ -65,6 +65,6 @@
     "unist-util-modify-children": "^2.0.0"
   },
   "peerDependencies": {
-    "typedoc": ">=0.17"
+    "typedoc": ">=0.21.3 && < 0.22.0"
   }
 }

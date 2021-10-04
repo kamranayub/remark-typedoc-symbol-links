@@ -1,15 +1,11 @@
 import { Root, Content } from 'ts-mdast'
 import { ReflectionKind } from 'typedoc'
-import typedoc20 from './typedoc-0.20.json'
-import typedoc17 from './typedoc-0.17.json'
+import typedoc21 from './typedoc-0.21.json'
 import { buildSymbolLinkIndex, generateLinkFromSymbol, SymbolIndex, SymbolPathItem } from '../helpers'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const remarkTransform = require('..')
 
-;[
-  { version: '0.20', typedoc: typedoc20 },
-  { version: '0.17', typedoc: typedoc17 },
-].forEach(({ version, typedoc }) => {
+;[{ version: '0.21', typedoc: typedoc21 }].forEach(({ version, typedoc }) => {
   describe(`remark-typedoc-symbol-links: ${version}`, () => {
     test('should pass through with no options', () => {
       const mockMdast: Root = {
@@ -70,11 +66,8 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
+
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
       expect(link.children).toHaveLength(1)
       const [linkText] = link.children as Content[]
@@ -104,11 +97,7 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
 
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
       expect(link.children).toHaveLength(1)
@@ -142,13 +131,8 @@ const remarkTransform = require('..')
       expect(link.type).toBe('link')
       expect(link2.type).toBe('link')
 
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-        expect(link2.url).toBe('/classes/_engine_.engine.html#start')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-        expect(link2.url).toBe('/classes/engine.engine.html#start')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
+      expect(link2.url).toBe('/classes/Engine.html#start')
 
       expect((link.children as Content[])[0].value).toBe('Engine')
       expect((link2.children as Content[])[0].value).toBe('Engine.start')
@@ -187,11 +171,8 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
+
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
       expect(link.children).toHaveLength(1)
       const [linkText] = link.children as Content[]
@@ -221,11 +202,7 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
 
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
       expect(link.children).toHaveLength(1)
@@ -536,129 +513,67 @@ const remarkTransform = require('..')
       })
 
       test('should generate link for class symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/_engine_.engine.html')
-        } else {
-          expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/engine.engine.html')
-        }
+        expect(generateLinkFromSymbol('Engine', '/', lookup)).toBe('/classes/Engine.html')
       })
 
       test('should generate link for class constructor symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/_engine_.engine.html#constructor')
-        } else {
-          expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/engine.engine.html#constructor')
-        }
+        expect(generateLinkFromSymbol('Engine#ctor', '/', lookup)).toBe('/classes/Engine.html#constructor')
       })
 
       test('should generate link for class method symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/_engine_.engine.html#start')
-        } else {
-          expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/engine.engine.html#start')
-        }
+        expect(generateLinkFromSymbol('Engine.start', '/', lookup)).toBe('/classes/Engine.html#start')
       })
 
       test('should generate link for class static method symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe(
-            '/classes/_engine_.engine.html#createmainloop',
-          )
-        } else {
-          expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe(
-            '/classes/engine.engine.html#createmainloop',
-          )
-        }
+        expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe('/classes/Engine.html#createMainLoop')
       })
 
       test('should generate link for class property symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe(
-            '/classes/_engine_.engine.html#rootscene',
-          )
-        } else {
-          expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe('/classes/engine.engine.html#rootscene')
-        }
+        expect(generateLinkFromSymbol('Engine.rootScene', '/', lookup)).toBe('/classes/Engine.html#rootScene')
       })
 
       test('should generate link for class accessor symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe(
-            '/classes/_engine_.engine.html#canvasheight',
-          )
-        } else {
-          expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe(
-            '/classes/engine.engine.html#canvasheight',
-          )
-        }
+        expect(generateLinkFromSymbol('Engine.canvasHeight', '/', lookup)).toBe('/classes/Engine.html#canvasHeight')
       })
 
       test('should generate link for interface symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/_engine_.engineoptions.html')
-        } else {
-          expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/engine.engineoptions.html')
-        }
+        expect(generateLinkFromSymbol('EngineOptions', '/', lookup)).toBe('/interfaces/EngineOptions.html')
       })
 
       test('should generate link for interface property symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
-            '/interfaces/_engine_.engineoptions.html#backgroundcolor',
-          )
-        } else {
-          expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
-            '/interfaces/engine.engineoptions.html#backgroundcolor',
-          )
-        }
+        expect(generateLinkFromSymbol('EngineOptions.backgroundColor', '/', lookup)).toBe(
+          '/interfaces/EngineOptions.html#backgroundColor',
+        )
       })
 
       test('should generate link for module function symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/_util_util_.html#clamp')
-        } else {
-          expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/util_index.html#clamp')
-        }
+        expect(generateLinkFromSymbol('roundRect', '/', lookup)).toBe('/modules/Util.DrawUtil.html#roundRect')
       })
 
       test('should generate link for module enum symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/_engine_.displaymode.html')
-        } else {
-          expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/screen.displaymode.html')
-        }
+        expect(generateLinkFromSymbol('DisplayMode', '/', lookup)).toBe('/enums/DisplayMode.html')
       })
 
       test('should generate link for module enum member symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
-            '/enums/_engine_.displaymode.html#container',
-          )
-        } else {
-          expect(generateLinkFromSymbol('DisplayMode.Container', '/', lookup)).toBe(
-            '/enums/screen.displaymode.html#container',
-          )
-        }
+        expect(generateLinkFromSymbol('DisplayMode.FillContainer', '/', lookup)).toBe(
+          '/enums/DisplayMode.html#FillContainer',
+        )
       })
 
       test('should generate link for type alias symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules/_events_.html#activate')
-        } else {
-          expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules/events.html#activate')
-        }
+        expect(generateLinkFromSymbol('activate', '/', lookup)).toBe('/modules.html#activate')
       })
 
-      test('should generate link for object literals symbol', () => {
-        if (version === '0.17') {
-          expect(generateLinkFromSymbol('REPORTED_FEATURES', '/', lookup)).toBe(
-            '/modules/_util_detector_.html#reported_features',
-          )
-        } else {
-          expect(generateLinkFromSymbol('REPORTED_FEATURES', '/', lookup)).toBe(
-            '/modules/util_detector.html#reported_features',
-          )
-        }
+      test('should generate link for type alias symbol in namespace', () => {
+        expect(generateLinkFromSymbol('Events.activate', '/', lookup)).toBe('/modules/Events.html#activate')
+      })
+
+      test('should generate link for variables symbol', () => {
+        expect(generateLinkFromSymbol('CollisionJumpTable', '/', lookup)).toBe('/modules.html#CollisionJumpTable')
+      })
+
+      test('should generate link for module symbol', () => {
+        expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/Util.html#clamp')
       })
 
       test('should generate link for some module symbol', () => {
@@ -671,7 +586,7 @@ const remarkTransform = require('..')
             ],
           ],
         ])
-        expect(generateLinkFromSymbol('test', '/', someModuleIndex)).toBe('/modules/somemodule.html#test')
+        expect(generateLinkFromSymbol('test', '/', someModuleIndex)).toBe('/modules/someModule.html#test')
       })
 
       test('should pass through if invalid container kind', () => {
@@ -700,19 +615,21 @@ const remarkTransform = require('..')
         // Interfaces
         expect(lookup.has('EngineOptions')).toBe(true)
 
-        // Exported functions
+        // Exported module functions
         expect(lookup.has('clamp')).toBe(true)
-        expect(lookup.has('canPlayFile')).toBe(true)
 
         // Enums
         expect(lookup.has('DisplayMode')).toBe(true)
-        expect(lookup.has('DisplayMode.Container')).toBe(true)
+        expect(lookup.has('DisplayMode.FillContainer')).toBe(true)
 
-        // Object literals / const
-        expect(lookup.has('REPORTED_FEATURES')).toBe(true)
+        // Variables
+        expect(lookup.has('CollisionJumpTable')).toBe(true)
 
         // Type aliases
         expect(lookup.has('activate')).toBe(true)
+
+        // Namespaces
+        expect(lookup.has('Events.activate')).toBe(true)
       })
     })
   })
