@@ -131,13 +131,8 @@ const remarkTransform = require('..')
       expect(link.type).toBe('link')
       expect(link2.type).toBe('link')
 
-      if (version === '0.17') {
-        expect(link.url).toBe('/classes/_engine_.engine.html')
-        expect(link2.url).toBe('/classes/_engine_.engine.html#start')
-      } else {
-        expect(link.url).toBe('/classes/engine.engine.html')
-        expect(link2.url).toBe('/classes/engine.engine.html#start')
-      }
+      expect(link.url).toBe('/classes/Engine.html')
+      expect(link2.url).toBe('/classes/Engine.html#start')
 
       expect((link.children as Content[])[0].value).toBe('Engine')
       expect((link2.children as Content[])[0].value).toBe('Engine.start')
