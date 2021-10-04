@@ -82,6 +82,37 @@ const remarkTransform = require('..')
       expect(linkText.value).toBe('Engine')
     })
 
+    test('remark 13 - should replace simple symbol text node with text and link nodes to symbol', () => {
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'text',
+            value: 'A link to [[Engine]] docs',
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any, basePath: '' })
+
+      transform(mockMdast)
+
+      expect(mockMdast.children).toHaveLength(3)
+
+      const [lhs, link, rhs] = mockMdast.children
+
+      expect(lhs.value).toBe('A link to ')
+      expect(rhs.value).toBe(' docs')
+
+      expect(link.type).toBe('link')
+      expect(link.url).toBe('/classes/Engine.html')
+
+      expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
+      expect(link.children).toHaveLength(1)
+      const [linkText] = link.children as Content[]
+      expect(linkText.type).toBe('text')
+      expect(linkText.value).toBe('Engine')
+    })
+
     test('should replace aliased symbol text node', () => {
       const mockMdast: Root = {
         type: 'root',
@@ -120,6 +151,37 @@ const remarkTransform = require('..')
       } else {
         expect(link.url).toBe('/classes/engine.engine.html')
       }
+      expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
+      expect(link.children).toHaveLength(1)
+      const [linkText] = link.children as Content[]
+      expect(linkText.type).toBe('text')
+      expect(linkText.value).toBe('the engine')
+    })
+
+    test('remark 13 - should replace aliased symbol text node', () => {
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'text',
+            value: 'A link to [[Engine|the engine]] docs',
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any })
+
+      transform(mockMdast)
+
+      expect(mockMdast.children).toHaveLength(3)
+
+      const [lhs, link, rhs] = mockMdast.children
+
+      expect(lhs.value).toBe('A link to ')
+      expect(rhs.value).toBe(' docs')
+
+      expect(link.type).toBe('link')
+      expect(link.url).toBe('/classes/Engine.html')
+
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
       expect(link.children).toHaveLength(1)
       const [linkText] = link.children as Content[]
