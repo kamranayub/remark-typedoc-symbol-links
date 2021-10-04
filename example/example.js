@@ -16,3 +16,7 @@ const doc = unified()
   .toString()
 
 console.log(doc)
+
+if (!doc.includes('class="tsdoc-link"')) {
+  throw new Error('Unexpected output of markdown')
+}
