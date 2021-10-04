@@ -95,56 +95,54 @@ export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTran
 
   const remarkMinimarkLinkModifier: modifyChildren.Modifier = (_node, index, parent): number | void => {
     const node = _node as Text
-    const matches = [...node.value.matchAll(/\[\[([^\]]+)\]\]/g)]
+    const [firstMatch] = [...node.value.matchAll(/\[\[([^\]]+)\]\]/g)]
     const newChildrenNodes = []
 
-    for (const linkMatch of matches) {
-      const linkText = linkMatch[1]
+    const linkText = firstMatch[1]
 
-      // does it have an alias display value? e.g. [[Symbol.method|display text]]
-      const [symbol, ...alias] = linkText.split('|')
-      const displayValue = alias.length ? alias.join('') : linkText
-      const symbolLink = generateLinkFromSymbol(symbol, options.basePath, symbolLinkIndex)
-      const missing = !symbolLink
+    // does it have an alias display value? e.g. [[Symbol.method|display text]]
+    const [symbol, ...alias] = linkText.split('|')
+    const displayValue = alias.length ? alias.join('') : linkText
+    const symbolLink = generateLinkFromSymbol(symbol, options.basePath, symbolLinkIndex)
+    const missing = !symbolLink
 
-      if (process.env.NODE_ENV === 'development' && missing) {
-        console.warn('remark-typedoc-symbol-links: Could not resolve symbol:', linkText)
-      }
-
-      const classNames = [options.linkClassName]
-
-      if (missing) {
-        classNames.push(options.linkMissingClassName)
-      }
-
-      if (displayValue !== linkText) {
-        classNames.push(options.linkAliasedClassName)
-      }
-
-      // inject text node with link node
-      const linkNode = {
-        type: 'link',
-        url: symbolLink || '',
-        title: options.linkTitleMessage(symbol, missing),
-        data: {
-          hProperties: {
-            className: classNames.join(' '),
-            target: '_blank',
-          },
-        },
-        children: [
-          {
-            type: 'text',
-            value: displayValue,
-          },
-        ],
-      }
-
-      const beforeTextNode = createText(node.value.substring(0, linkMatch.index))
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const afterTextNode = createText(node.value.substring(linkMatch.index! + linkMatch[0].length))
-      newChildrenNodes.push(beforeTextNode, linkNode, afterTextNode)
+    if (process.env.NODE_ENV === 'development' && missing) {
+      console.warn('remark-typedoc-symbol-links: Could not resolve symbol:', linkText)
     }
+
+    const classNames = [options.linkClassName]
+
+    if (missing) {
+      classNames.push(options.linkMissingClassName)
+    }
+
+    if (displayValue !== linkText) {
+      classNames.push(options.linkAliasedClassName)
+    }
+
+    // inject text node with link node
+    const linkNode = {
+      type: 'link',
+      url: symbolLink || '',
+      title: options.linkTitleMessage(symbol, missing),
+      data: {
+        hProperties: {
+          className: classNames.join(' '),
+          target: '_blank',
+        },
+      },
+      children: [
+        {
+          type: 'text',
+          value: displayValue,
+        },
+      ],
+    }
+
+    const beforeTextNode = createText(node.value.substring(0, firstMatch.index))
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const afterTextNode = createText(node.value.substring(firstMatch.index! + firstMatch[0].length))
+    newChildrenNodes.push(beforeTextNode, linkNode, afterTextNode)
 
     parent.children.splice(index, 1, ...newChildrenNodes)
     return index + 1
