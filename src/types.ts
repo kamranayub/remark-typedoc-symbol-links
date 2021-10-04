@@ -1,4 +1,4 @@
-import type { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema'
+import type { DeclarationReflection } from 'typedoc/dist/lib/models/reflections/declaration'
 
 export interface Options {
   typedoc?: DeclarationReflection

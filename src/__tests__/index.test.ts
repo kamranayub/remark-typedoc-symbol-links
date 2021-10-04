@@ -104,7 +104,11 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      expect(link.url).toBe('/classes/Engine.html')
+      if (version === '0.17') {
+        expect(link.url).toBe('/classes/_engine_.engine.html')
+      } else {
+        expect(link.url).toBe('/classes/engine.engine.html')
+      }
 
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link')
       expect(link.children).toHaveLength(1)
@@ -180,7 +184,11 @@ const remarkTransform = require('..')
       expect(rhs.value).toBe(' docs')
 
       expect(link.type).toBe('link')
-      expect(link.url).toBe('/classes/Engine.html')
+      if (version === '0.17') {
+        expect(link.url).toBe('/classes/_engine_.engine.html')
+      } else {
+        expect(link.url).toBe('/classes/engine.engine.html')
+      }
 
       expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--aliased')
       expect(link.children).toHaveLength(1)
