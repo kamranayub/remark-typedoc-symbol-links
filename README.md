@@ -13,6 +13,12 @@
 
 A Remark plugin for transforming [TypeDoc](https://typedoc.org) symbol links, such as `[[symbol]]` to a Markdown link, with Rehype compatibility.
 
+## Typedoc Compatibility
+
+This version requires `typedoc >= 0.21.3 && <= 0.21.9`. Use earlier versions of the package for Typedoc versions below this range.
+
+The `peerDependencies` is kept up-to-date with what version of TypeDoc is supported. Each minor version tends to contain some breaking changes that affect this parsing.
+
 ## Install
 
 Install via `npm` or `yarn`:
