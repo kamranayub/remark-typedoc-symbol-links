@@ -175,7 +175,7 @@ export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTran
 
   return transformer
 
-  function transformer(tree: any) {
+  function transformer(tree: Node) {
     transformLinks(tree)
   }
 }
