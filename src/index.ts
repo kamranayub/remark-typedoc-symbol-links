@@ -1,5 +1,5 @@
 import modifyChildren from 'unist-util-modify-children'
-import { Root, Node, isText, isParent, isLinkReference, createText, Text } from 'ts-mdast'
+import { Root, Node, isText, isParent, isLinkReference, createText, Text, LinkReference } from 'ts-mdast'
 import { buildSymbolLinkIndex, generateLinkFromSymbol } from './helpers'
 import { Options } from './types'
 
@@ -16,16 +16,15 @@ const DEFAULT_OPTIONS = {
 }
 
 function isSymbolLinkTextNode(node: Node): node is Text {
-  return isText(node) && node.value.indexOf('[[') > -1
+  return isText(node) && /\[\[([^\]]+)\]\]/.test(node.value)
 }
 
 export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTransformer {
   const options = { ...DEFAULT_OPTIONS, ...userOptions }
   const symbolLinkIndex = buildSymbolLinkIndex(options.typedoc)
 
-  const remarkLegacyLinkModifier: modifyChildren.Modifier = (node, index, parent): number | void => {
-    if (!isLinkReference(node)) return
-
+  const remarkLegacyLinkModifier: modifyChildren.Modifier = (_node, index, parent): number | void => {
+    const node = _node as LinkReference
     const nodeIndex = parent.children.indexOf(node)
     const prevNode = parent.children[nodeIndex - 1]
     const nextNode = parent.children[nodeIndex + 1]
@@ -94,20 +93,13 @@ export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTran
     }
   }
 
-  const remarkMinimarkLinkModifier: modifyChildren.Modifier = (node, index, parent): number | void => {
-    if (!isText(node)) return
-
-    // A symbol link looks like [[symbol|optional label]]
-    const bracketsRegex = /\[\[([^\]]+)\]\]/g
-    const matches = node.value.matchAll(bracketsRegex)
+  const remarkMinimarkLinkModifier: modifyChildren.Modifier = (_node, index, parent): number | void => {
+    const node = _node as Text
+    const matches = [...node.value.matchAll(/\[\[([^\]]+)\]\]/g)]
     const newChildrenNodes = []
 
     for (const linkMatch of matches) {
-      const linkText = linkMatch.groups?.[0]
-
-      if (!linkText) {
-        return
-      }
+      const linkText = linkMatch[1]
 
       // does it have an alias display value? e.g. [[Symbol.method|display text]]
       const [symbol, ...alias] = linkText.split('|')
@@ -150,7 +142,7 @@ export = function remarkTypedocSymbolLinks(userOptions: Options = {}): MdastTran
 
       const beforeTextNode = createText(node.value.substring(0, linkMatch.index))
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const afterTextNode = createText(node.value.substring(linkMatch.index! + linkMatch.length))
+      const afterTextNode = createText(node.value.substring(linkMatch.index! + linkMatch[0].length))
       newChildrenNodes.push(beforeTextNode, linkNode, afterTextNode)
     }
 

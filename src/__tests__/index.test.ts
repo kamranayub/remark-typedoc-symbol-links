@@ -238,6 +238,36 @@ const remarkTransform = require('..')
       expect(linkText.value).toBe('abcdefg')
     })
 
+    test('remark 13 - should annotate broken symbol with missing className', () => {
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'text',
+            value: 'A link to [[abcdefg]] docs',
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any })
+
+      transform(mockMdast)
+
+      expect(mockMdast.children).toHaveLength(3)
+
+      const [lhs, link, rhs] = mockMdast.children
+
+      expect(lhs.value).toBe('A link to ')
+      expect(rhs.value).toBe(' docs')
+
+      expect(link.type).toBe('link')
+      expect(link.url).toBe('')
+      expect((link.data?.hProperties as any)?.className).toBe('tsdoc-link tsdoc-link--missing')
+      expect(link.children).toHaveLength(1)
+      const [linkText] = link.children as Content[]
+      expect(linkText.type).toBe('text')
+      expect(linkText.value).toBe('abcdefg')
+    })
+
     test('should warn on broken symbol in development env', () => {
       process.env.NODE_ENV = 'development'
 
@@ -270,6 +300,27 @@ const remarkTransform = require('..')
       expect(console.warn).toHaveBeenCalledWith('remark-typedoc-symbol-links: Could not resolve symbol:', 'abcdefg')
     })
 
+    test('remark 13 - should warn on broken symbol in development env', () => {
+      process.env.NODE_ENV = 'development'
+
+      jest.spyOn(console, 'warn')
+
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'text',
+            value: 'A link to [[abcdefg]]',
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any })
+
+      transform(mockMdast)
+
+      expect(console.warn).toHaveBeenCalledWith('remark-typedoc-symbol-links: Could not resolve symbol:', 'abcdefg')
+    })
+
     test('should transform children', () => {
       const mockMdast: Root = {
         type: 'root',
@@ -291,6 +342,30 @@ const remarkTransform = require('..')
               {
                 type: 'text',
                 value: '] docs',
+              },
+            ],
+          },
+        ],
+      }
+      const transform = remarkTransform({ typedoc: typedoc as any })
+
+      transform(mockMdast)
+
+      expect(mockMdast.children).toHaveLength(1)
+      expect(mockMdast.children[0].children).toHaveLength(3)
+      expect((mockMdast.children[0].children as Content[])[1].type).toBe('link')
+    })
+
+    test('remark 13 - should transform children', () => {
+      const mockMdast: Root = {
+        type: 'root',
+        children: [
+          {
+            type: 'paragraph',
+            children: [
+              {
+                type: 'text',
+                value: 'A link to [[Engine|the engine]] docs',
               },
             ],
           },
