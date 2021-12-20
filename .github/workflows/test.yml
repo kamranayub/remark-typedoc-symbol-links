@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint-and-test:
-    name: Test on node 14 and ubuntu-latest
+    name: Test on node
     runs-on: ubuntu-latest
 
     steps:
