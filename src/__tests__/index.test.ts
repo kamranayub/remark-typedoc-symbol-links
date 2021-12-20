@@ -1,11 +1,11 @@
 import { Root, Content } from 'ts-mdast'
 import { ReflectionKind } from 'typedoc'
-import typedoc21 from './typedoc-0.21.json'
+import typedoc22 from './typedoc-0.22.json'
 import { buildSymbolLinkIndex, generateLinkFromSymbol, SymbolIndex, SymbolPathItem } from '../helpers'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const remarkTransform = require('..')
 
-;[{ version: '0.21', typedoc: typedoc21 }].forEach(({ version, typedoc }) => {
+;[{ version: '0.22', typedoc: typedoc22 }].forEach(({ version, typedoc }) => {
   describe(`remark-typedoc-symbol-links: ${version}`, () => {
     test('should pass through with no options', () => {
       const mockMdast: Root = {
