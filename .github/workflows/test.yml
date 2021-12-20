@@ -11,16 +11,16 @@ on:
 
 jobs:
   lint-and-test:
-    name: Test on node 14 and ubuntu-latest
+    name: Test on node
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version-file: '.nvmrc'
       - run: yarn
       - run: yarn lint
       - run: yarn build

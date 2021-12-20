@@ -1,4 +1,4 @@
-import { ReflectionKind } from 'typedoc/dist/lib/models'
+import { ReflectionKind } from 'typedoc'
 import { DeclarationReflection } from 'typedoc/dist/lib/serialization/schema'
 import { SYMBOL_LINK_KINDS, SYMBOL_CONTAINERS } from './constants'
 
