@@ -19,6 +19,10 @@ This version requires `>=0.21.3`. Use earlier versions of the package for Typedo
 
 The `peerDependencies` is kept up-to-date with what version of TypeDoc is supported. Each minor version tends to contain some breaking changes that affect this parsing.
 
+### Note: npm 7 and peer dependencies
+
+If you have a version of Typedoc installed on your project that _does not_ satisfy the peer dependency range above, npm 7 **will install the latest version of TypeDoc that satisfies the peer dependency** which means you may have a mismatch in behavior. The symbol links plugin will use its _local_ Typedoc version instead of your project's version.
+
 ## Install
 
 Install via `npm` or `yarn`:
