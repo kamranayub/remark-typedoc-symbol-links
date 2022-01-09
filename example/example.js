@@ -1,8 +1,8 @@
-const fs = require('fs')
-const unified = require('unified')
-const markdown = require('remark-parse')
-const html = require('remark-html')
-const typedocSymbolLinks = require('../dist')
+import fs from 'fs'
+import unified from 'unified'
+import markdown from 'remark-parse'
+import html from 'remark-html'
+import typedocSymbolLinks from '../dist/index.js'
 
 // Load generated TypeDoc
 const typedoc = JSON.parse(fs.readFileSync('../src/__tests__/typedoc-0.22.json'))
@@ -11,7 +11,7 @@ const doc = unified()
   .use(markdown)
   // Pass typedoc and other options
   .use(typedocSymbolLinks, { typedoc, basePath: '/docs/api' })
-  .use(html)
+  .use(html, { sanitize: false })
   .processSync(fs.readFileSync('example.md'))
   .toString()
 

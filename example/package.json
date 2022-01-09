@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "example.js",
+  "type": "module",
   "scripts": {
     "start": "node example.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "remark-html": "^13.0.1",
-    "remark-parse": "^9.0.0",
-    "unified": "^9.2.1"
+    "remark-html": "13.0.2",
+    "remark-parse": "9.0.0",
+    "unified": "9.2.1"
   }
 }
