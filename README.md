@@ -15,7 +15,7 @@ A Remark plugin for transforming [TypeDoc](https://typedoc.org) symbol links, su
 
 ## Typedoc Compatibility
 
-This version requires `>=0.21.3 && < 0.22.0`. Use earlier versions of the package for Typedoc versions below this range.
+This version requires `>=0.21.3`. Use earlier versions of the package for Typedoc versions below this range.
 
 The `peerDependencies` is kept up-to-date with what version of TypeDoc is supported. Each minor version tends to contain some breaking changes that affect this parsing.
 
