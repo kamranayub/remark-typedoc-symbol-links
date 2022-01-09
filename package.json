@@ -65,6 +65,6 @@
     "unist-util-modify-children": "^2.0.0"
   },
   "peerDependencies": {
-    "typedoc": ">=0.21.3 && < 0.22.0"
+    "typedoc": ">=0.21.3"
   }
 }
