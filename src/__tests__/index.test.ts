@@ -1,11 +1,15 @@
 import { Root, Content } from 'ts-mdast'
 import { ReflectionKind } from 'typedoc'
 import typedoc22 from './typedoc-0.22.json'
+import typedoc23 from './typedoc-0.23.json'
 import { buildSymbolLinkIndex, generateLinkFromSymbol, SymbolIndex, SymbolPathItem } from '../helpers'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const remarkTransform = require('..')
 
-;[{ version: '0.22', typedoc: typedoc22 }].forEach(({ version, typedoc }) => {
+;[
+  { version: '0.22', typedoc: typedoc22 },
+  { version: '0.23', typedoc: typedoc23 },
+].forEach(({ version, typedoc }) => {
   describe(`remark-typedoc-symbol-links: ${version}`, () => {
     test('should pass through with no options', () => {
       const mockMdast: Root = {
@@ -525,7 +529,9 @@ const remarkTransform = require('..')
       })
 
       test('should generate link for class static method symbol', () => {
-        expect(generateLinkFromSymbol('Engine.createMainLoop', '/', lookup)).toBe('/classes/Engine.html#createMainLoop')
+        expect(generateLinkFromSymbol('BoundingBox.getSideFromIntersection', '/', lookup)).toBe(
+          '/classes/BoundingBox.html#getSideFromIntersection',
+        )
       })
 
       test('should generate link for class property symbol', () => {
@@ -570,10 +576,6 @@ const remarkTransform = require('..')
 
       test('should generate link for variables symbol', () => {
         expect(generateLinkFromSymbol('CollisionJumpTable', '/', lookup)).toBe('/modules.html#CollisionJumpTable')
-      })
-
-      test('should generate link for module symbol', () => {
-        expect(generateLinkFromSymbol('clamp', '/', lookup)).toBe('/modules/Util.html#clamp')
       })
 
       test('should generate link for some module symbol', () => {

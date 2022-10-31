@@ -51,7 +51,7 @@ This was developed for use by the [excalibur.js](https://excaliburjs.com) projec
 
 This plugin is meant to be used with [mdast](https://github.com/syntax-tree/mdast) inside a [unified](https://unifiedjs.com/) pipeline. If using directly as a Remark plugin, see `examples/example.js`.
 
-Given the folowing Markdown:
+Given the following Markdown:
 
 ```md
 ## Introduction

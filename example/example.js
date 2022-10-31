@@ -5,7 +5,7 @@ import html from 'remark-html'
 import typedocSymbolLinks from '../dist/index.js'
 
 // Load generated TypeDoc
-const typedoc = JSON.parse(fs.readFileSync('../src/__tests__/typedoc-0.22.json'))
+const typedoc = JSON.parse(fs.readFileSync('../src/__tests__/typedoc-0.23.json'))
 
 const doc = unified()
   .use(markdown)
